@@ -1,5 +1,6 @@
 import os
 import re
+import sqlite3
 from typing import Any, Dict, List, Tuple
 
 from linechef.battle_type import BattleType
@@ -59,6 +60,7 @@ def parse_trainer_details(trainer_name: str, details: str) -> Tuple[List[Dict[st
         possible_match = re.match(pokemon_regex, line)
         if not possible_match: 
             if "~" in line: 
+                
                 continue
             else: 
                 # TODO: check if doubles here?
@@ -71,19 +73,22 @@ def parse_trainer_details(trainer_name: str, details: str) -> Tuple[List[Dict[st
 
 
 
-def insert_battles_to_db(split_results: Dict[str, List[str]]): 
+def insert_battles_to_db():
+    split_results = read_trainer_battles("db/trainer_battles.txt") 
     # For now, just print out trainers
 
+    db = sqlite3.connect("db/rnb.db") 
+    cursor = db.cursor()
+
+    # Establish tables if they do not exist
+    
     # Save or print results
     for route, trainers in split_results.items():
         print(f"Route: {route}")
-        for trainer in trainers:
-            print(f"\tTrainer: {trainer['trainer']}")
-            print(f"\t\tDetails: {trainer['details']}\n")
 
+        # For trainer db, insert name, route, ID, special?
+        
+        # for trainer in trainers:
+        #     print(f"\tTrainer: {trainer['trainer']}")
+        #     print(f"\t\tDetails: {trainer['details']}\n")
 
-
-
-if __name__ == "__main__": 
-    split_data = read_trainer_battles("db/trainer_battles.txt")
-    insert_battles_to_db(split_results=split_data)

@@ -1,0 +1,164 @@
+Move,BP,PP,Accuracy,Effect Chance,Type
+Absorb,40,None,None,None,None
+Aeroblast,None,None,100,None,None
+Air Cutter,None,None,100,None,None
+Air Slash,None,None,100,None,None
+Aqua Tail,None,None,95,None,None
+Astonish,40,None,None,None,None
+Baby-Doll Eyes,None,10,None,None,None
+Barrage,None,None,100,None,None
+Belch,None,None,100,None,None
+Bind,None,None,100,None,None
+Blaze Kick,None,None,100,None,None
+Blizzard,None,None,80,None,None
+Blue Flare,None,None,90,None,None
+Bolt Strike,None,None,90,None,None
+Bone Club,None,None,100,None,None
+Bonemerang,None,None,100,None,None
+Bounce,None,None,95,None,None
+Captivate,None,5,None,None,None
+Charge Beam,40,None,100,100,None
+Charm,None,5,None,None,None
+Circle Throw,None,None,95,None,None
+Clamp,None,None,100,None,None
+Comet Punch,None,None,90,None,None
+Confide,None,10,None,None,None
+Covet,None,None,None,None,Fairy
+Crabhammer,None,None,100,None,None
+Cross Chop,None,None,90,None,None
+Cut,None,None,100,None,None
+Dark Void,None,None,80,None,None
+Diamond Storm,None,None,100,None,None
+Double Hit,None,None,100,None,None
+Double Slap,None,None,100,None,None
+Draco Meteor,None,None,100,None,None
+Dragon Rush,None,None,85,None,None
+Dragon Tail,None,None,95,None,None
+Drill Run,None,None,100,None,None
+Dual Chop,None,None,100,None,None
+Dual Wingbeat,None,None,100,None,None
+Eerie Impulse,None,5,None,None,None
+Electroweb,None,None,100,None,None
+Fake Out,None,5,None,None,None
+Fake Tears,None,5,None,None,None
+Feather Dance,None,5,None,None,None
+Fire Fang,None,None,100,None,None
+Fire Spin,None,None,100,None,None
+Flash,None,None,70,None,None
+Fleur Cannon,None,None,100,None,None
+Fly,None,None,100,None,None
+Flying Press,None,None,100,None,None
+Focus Blast,None,None,80,None,None
+Freeze Shock,None,None,100,None,None
+Frenzy Plant,None,None,100,None,None
+Frost Breath,None,None,100,None,None
+Frustration,102,None,None,None,None
+Fury Attack,None,None,100,None,None
+Fury Swipes,None,None,90,None,None
+Gear Grind,None,None,100,None,None
+Giga Impact,None,None,100,None,None
+Glaciate,None,None,100,None,None
+Grass Whistle,None,None,70,None,None
+Growl,None,10,None,None,None
+Gunk Shot,None,None,85,None,None
+Hammer Arm,None,None,100,None,None
+Harden,None,5,None,None,None
+Head Smash,None,None,85,None,None
+Heat Wave,None,None,100,None,None
+High Horsepower,None,None,100,None,None
+Hurricane,None,None,80,None,None
+Hydro Cannon,None,None,100,None,None
+Hydro Pump,None,None,85,None,None
+Hyper Beam,None,None,100,None,None
+Hyper Fang,None,None,100,None,None
+Hypnosis,None,None,70,None,None
+Ice Burn,None,None,100,None,None
+Ice Fang,None,None,100,None,None
+Ice Hammer,None,None,100,None,None
+Icicle Crash,None,None,100,None,None
+Icy Wind,None,None,100,None,None
+Iron Tail,None,None,85,None,None
+Kinesis,None,None,100,None,None
+Leaf Storm,None,None,100,None,None
+Leaf Tornado,None,None,100,30,None
+Leech Seed,None,None,100,None,None
+Leer,None,10,None,None,None
+Lick,40,None,None,None,None
+Light of Ruin,None,None,100,None,None
+Lovely Kiss,None,None,80,None,None
+Magma Storm,None,None,90,None,None
+Mega Drain,60,None,None,None,None
+Mega Kick,None,None,85,None,None
+Mega Punch,None,None,100,None,None
+Megahorn,None,None,90,None,None
+Metal Claw,None,None,100,None,None
+Metal Sound,None,5,100,None,None
+Meteor Beam,None,None,100,None,None
+Meteor Mash,None,None,100,None,None
+Mirror Shot,None,None,100,20,None
+Misty Explosion,200,None,None,None,None
+Mud Bomb,None,None,100,20,None
+Muddy Water,None,None,95,None,None
+Nature's Madness,None,None,100,None,None
+Night Daze,None,None,100,30,None
+Noble Roar,None,10,None,None,None
+Octazooka,80,None,100,30,None
+Origin Pulse,None,None,100,None,None
+Overheat,None,None,100,None,None
+Pin Missile,None,None,100,None,None
+Play Nice,None,10,None,None,None
+Play Rough,None,None,100,None,None
+Poison Powder,None,None,90,None,None
+Power Whip,None,None,90,None,None
+Precicipe Blades,None,None,100,None,None
+Psycho Boost,None,None,100,None,None
+Razor Leaf,None,None,100,None,None
+Razor Shell,None,None,100,None,None
+Return,102,None,None,None,None
+Roar of Time,None,None,100,None,None
+Rock Blast,None,None,100,None,None
+Rock Climb,None,None,95,None,None
+Rock Slide,None,None,100,None,None
+Rock Smash,None,None,None,100,None
+Rock Throw,None,None,100,None,None
+Rock Wrecker,None,None,100,None,None
+Rolling Kick,None,None,100,None,None
+Roost,None,5,None,None,None
+Sacred Fire,None,None,100,None,None
+Sand Tomb,None,None,100,None,None
+Sand-Attack,None,5,None,None,None
+Scale Shot,None,None,100,None,None
+Screech,None,5,100,None,None
+Seed Flare,None,None,90,None,None
+Sing,None,None,70,None,None
+Skitter Smack,None,None,100,None,None
+Sky Attack,None,None,100,None,None
+Sky Uppercut,None,None,100,None,None
+Slam,None,None,90,None,None
+Sleep Powder,None,None,80,None,None
+Smog,None,None,90,100,None
+Snarl,None,10,100,None,None
+Sonic Boom,None,None,100,None,None
+Spacial Rend,None,None,100,None,None
+Steam Eruption,None,None,100,None,None
+Steel Beam,None,None,100,None,None
+Steel Wing,None,None,100,None,None
+Stone Edge,None,None,85,None,None
+Strange Steam,None,None,100,None,None
+Struggle Bug,None,10,None,None,None
+Stun Spore,None,None,90,None,None
+Submission,None,None,100,None,None
+Super Fang,None,None,100,None,Dark
+Supersonic,None,None,70,None,None
+Swagger,None,None,90,None,None
+Sweet Kiss,None,None,80,None,None
+Tail Slap,None,None,100,None,None
+Take Down,None,None,100,None,None
+Tearful Look,None,10,None,None,None
+Thunder,None,None,80,None,None
+Thunder Cage,None,None,100,None,None
+Thunder Fang,None,None,100,None,None
+Tickle,None,10,None,None,None
+Whirlpool,None,None,100,None,None
+Wrap,None,None,100,None,None
+Zen Headbutt,None,None,100,None,None
