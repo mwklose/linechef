@@ -2,13 +2,14 @@ CREATE TABLE IF NOT EXISTS trainers (
     id INTEGER PRIMARY KEY AUTOINCREMENT, 
     name TEXT, 
     route TEXT,
+    battle_type INTEGER,
     gauntlet_id INTEGER,
     b2b_id INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS held_item (
     id INTEGER PRIMARY KEY AUTOINCREMENT, 
-    name TEXT NOT NULL
+    name TEXT
 );
 
 -- types
@@ -68,7 +69,12 @@ INSERT INTO pokenature (name) SELECT ("Hasty") WHERE NOT EXISTS(SELECT 1 FROM po
 INSERT INTO pokenature (name) SELECT ("Jolly") WHERE NOT EXISTS(SELECT 1 FROM pokenature WHERE name="Jolly");
 INSERT INTO pokenature (name) SELECT ("Naive") WHERE NOT EXISTS(SELECT 1 FROM pokenature WHERE name="Naive");
 INSERT INTO pokenature (name) SELECT ("Serious") WHERE NOT EXISTS(SELECT 1 FROM pokenature WHERE name="Serious");
-    
+
+-- Abilities Table
+CREATE TABLE IF NOT EXISTS pokeability (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    name TEXT NOT NULL
+);
 
 -- Species base stats
 CREATE TABLE IF NOT EXISTS species_stat (
@@ -102,7 +108,9 @@ CREATE TABLE IF NOT EXISTS pokemove (
     stat TEXT, 
     stat_chance INTEGER, 
     drain INTEGER, 
-    healing INTEGER
+    healing INTEGER,
+    min_hits INTEGER, 
+    max_hits INTEGER
 );
 
 
@@ -112,8 +120,10 @@ CREATE TABLE IF NOT EXISTS pokemon (
     
     lead_pokemon BOOLEAN, 
     species INTEGER NOT NULL REFERENCES species_stats(id), 
+    nature INTEGER NOT NULL REFERENCES pokenature(id),
+    ability INTEGER NOT NULL REFERENCES pokeability(id),
     pokelevel INTEGER, 
-    held_item INTEGER NOT NULL REFERENCES held_item(id),
+    held_item INTEGER REFERENCES held_item(id),
     move1 INTEGER NOT NULL REFERENCES pokemove(id),
     move2 INTEGER REFERENCES pokemove(id),
     move3 INTEGER REFERENCES pokemove(id),

@@ -1,0 +1,1 @@
+SELECT id FROM held_item WHERE name = (?);
