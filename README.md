@@ -7,8 +7,8 @@ Technology: Python (uv-managed) + SQLite3
 
 ## TODO: 
 
-- [ ] Make RnB-specific move adjustments
-- [ ] Read Trainer information into a DB Table
+- [X] Make RnB-specific move adjustments
+- [X] Read Trainer information into a DB Table
 - [ ] Convert Trainers to Gauntlet+B2B information
 - [ ] Implement Battle Start/Lookup
 - [ ] Implement Battle State at any given moment

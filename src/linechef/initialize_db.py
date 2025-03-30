@@ -1,6 +1,8 @@
 import sqlite3
 from linechef.learnset_into_db import insert_learnsets_and_base_stats
 from linechef.trainer_battles_to_db import insert_battles_to_db
+from linechef.update_move_values import update_moves
+
 
 if __name__ == "__main__":
 
@@ -24,3 +26,7 @@ if __name__ == "__main__":
     # 4. Import Move Category, Type, Power, Accuracy, whether secondary effects
     print("[initialize_db] Starting to insert trainer battles")
     insert_battles_to_db()
+
+
+    print("[initialize_db] Starting to update movesets.")
+    update_moves("db/move_changes.csv")
