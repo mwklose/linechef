@@ -1,0 +1,140 @@
+Staravia
+Ability: Intimidate
+Level: 21
+Serious Nature
+IVs: 22 HP / 27 Atk / 29 Def / 26 SpA / 17 SpD / 29 Spe
+- Secret Power
+- Endeavor
+- Quick Attack
+- Aerial Ace
+
+Grotle
+Ability: Shell Armor
+Level: 21
+Quiet Nature
+IVs: 21 HP / 9 Atk / 31 Def / 15 SpA / 31 SpD / 31 Spe
+- Bite
+- Razor Leaf
+- Absorb
+- Sand Tomb
+
+Tirtouga @ Oran Berry
+Ability: Solid Rock
+Level: 21
+Brave Nature
+IVs: 17 HP / 10 Atk / 17 Def / 19 SpA / 9 SpD / 28 Spe
+- Brine
+- Ancient Power
+- Smack Down
+- Aqua Jet
+
+Seadra
+Ability: Poison Point
+Level: 21
+Lonely Nature
+IVs: 1 HP / 21 Atk / 17 Def / 11 SpA / 20 SpD / 25 Spe
+- Bubble Beam
+- Clear Smog
+- Leer
+- Twister
+
+Masquerain
+Ability: Intimidate
+Level: 22
+Bold Nature
+IVs: 11 HP / 9 Atk / 20 Def / 1 SpA / 22 SpD / 23 Spe
+- Scary Face
+- Gust
+- Struggle Bug
+- Bubble Beam
+
+Staryu @ Oran Berry
+Ability: Natural Cure
+Level: 21
+Lonely Nature
+IVs: 29 HP / 22 Atk / 31 Def / 24 SpA / 6 SpD / 27 Spe
+- Water Pulse
+- Rapid Spin
+- Swift
+- Psybeam
+
+Sizzlipede @ Oran Berry
+Ability: Flame Body
+Level: 21
+Bashful Nature
+IVs: 27 HP / 5 Atk / 27 Def / 8 SpA / 1 SpD / 15 Spe
+- Flame Wheel
+- Smokescreen
+- Bite
+- Bug Bite
+
+Rhyhorn @ Oran Berry
+Ability: Rock Head
+Level: 21
+Brave Nature
+IVs: 24 HP / 17 Atk / 18 Def / 7 SpA / 6 SpD / 13 Spe
+- Stomp
+- Bulldoze
+- Scary Face
+- Smack Down
+
+Farfetch’d-Galar @ Oran Berry
+Ability: Inner Focus
+Level: 21
+Impish Nature
+IVs: 4 HP / 9 Atk / 2 Def / 1 SpA / 14 SpD / 15 Spe
+- Pluck
+- Sand Attack
+- Brutal Swing
+- Rock Smash
+
+Herdier @ Oran Berry
+Ability: Sand Rush
+Level: 21
+Mild Nature
+IVs: 21 HP / 30 Atk / 28 Def / 14 SpA / 2 SpD / 31 Spe
+- Baby-Doll Eyes
+- Secret Power
+- Covet
+- Bite
+
+Paras
+Ability: Effect Spore
+Level: 21
+Rash Nature
+IVs: 18 HP / 24 Atk / 3 Def / 1 SpA / 20 SpD / 21 Spe
+- Mega Drain
+- Stun Spore
+- Spore
+- Bug Bite
+
+Steenee
+Ability: Oblivious
+Level: 21
+Hardy Nature
+IVs: 30 HP / 1 Atk / 26 Def / 27 SpA / 5 SpD / 24 Spe
+- Magical Leaf
+- Play Nice
+- Rapid Spin
+- Razor Leaf
+
+Remoraid
+Ability: Hustle
+Level: 21
+Modest Nature
+IVs: 10 HP / 7 Atk / 6 Def / 9 SpA / 24 SpD / 4 Spe
+- Bubble Beam
+- Lock-On
+- Psybeam
+- Aurora Beam
+
+Electrike
+Ability: Static
+Level: 21
+Docile Nature
+IVs: 4 HP / 17 Atk / 12 Def / 4 SpA / 7 SpD / 7 Spe
+- Thunder Wave
+- Thunder Fang
+- Shock Wave
+- Quick Attack
+

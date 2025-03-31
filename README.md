@@ -12,6 +12,7 @@ Technology: Python (uv-managed) + SQLite3
 - [X] Convert Trainers to Gauntlet+B2B information
 - [ ] Implement Battle Start/Lookup
 - [ ] Implement Battle State at any given moment
+- [ ] Implement Single Move in Battle
 - [ ] Implement Opponent AI given battle state
 - [ ] Implement Own AI given battle state (genetic algorithm? discrete choices?)
 - [ ] Implement team-finding algorithm

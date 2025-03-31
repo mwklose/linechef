@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import re
 import sqlite3
+from linechef.pokemon import Pokemon
 
 
 @dataclass
@@ -29,15 +30,6 @@ class BattleState:
 
         first_trainer_id, = trainer_id[0]
 
-        with open("db/sqls/get_pokemon_by_trainer_id.sql", "r") as f:
-            query_get_trainer: str = f.read()
-
-        lead_pokemon = cursor.execute(
-            query_get_trainer, (first_trainer_id, True)).fetchone()
-
-        # TODO: extract tuple into Pokemon object
-
-        remaining_pokemon = cursor.execute(
-            query_get_trainer, (first_trainer_id, False)).fetchall()
+        poke = Pokemon.get_pokemon_by_trainer_id(trainer_id=first_trainer_id)
 
         breakpoint()
