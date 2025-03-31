@@ -12,24 +12,33 @@ class Pokemove:
     accuracy: int
     priority: int
     poketype: int
-    flinch_change: int
+    flinch_chance: int
     ailment: str
     ailment_chance: int
     crit_rate: int
     stat: str
-    stat_change: int
+    stat_chance: int
     drain: int
     healing: int
     min_hits: int
     max_hits: int
 
     @staticmethod
-    def get_pokemove_by_id(move_id: int) -> "Pokemove":
+    def get_pokemove_by_id(move_id: int | None) -> "Pokemove | None":
+        if move_id is None: 
+            return None
+
         db = sqlite3.connect("db/rnb.db")
+        db.row_factory = sqlite3.Row
         cursor = db.cursor()
 
-        movedetails, = cursor.execute(
+        movedetails = cursor.execute(
             "SELECT * FROM pokemove WHERE id == (?)", (move_id,)).fetchone()
-        breakpoint()
 
-        return Pokemove(**movedetails)
+        if movedetails is None: 
+            breakpoint()
+        
+        movedict = dict(movedetails)
+        movedict.pop("id")
+
+        return Pokemove(**movedict)

@@ -10,4 +10,5 @@ if __name__ == "__main__":
     BattleState.find_by_route_and_name(
         route=sys.argv[1], trainer_name=sys.argv[2])
 
+    # TODO: get battle state, begin model deployment?
     ...
