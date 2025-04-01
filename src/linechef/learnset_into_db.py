@@ -67,6 +67,7 @@ def adjust_pokemon_name(name: str | None) -> str:
             .replace("kyuremb", "kyurem-b")
             .replace("icerider", "-ice")
             .replace("50powerconstruct", "-50-power-construct")
+            .replace("’", "")
             )
 
 

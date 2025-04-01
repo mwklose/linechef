@@ -25,7 +25,7 @@ class Pokemove:
 
     @staticmethod
     def get_pokemove_by_id(move_id: int | None) -> "Pokemove | None":
-        if move_id is None: 
+        if move_id is None:
             return None
 
         db = sqlite3.connect("db/rnb.db")
@@ -35,9 +35,9 @@ class Pokemove:
         movedetails = cursor.execute(
             "SELECT * FROM pokemove WHERE id == (?)", (move_id,)).fetchone()
 
-        if movedetails is None: 
+        if movedetails is None:
             breakpoint()
-        
+
         movedict = dict(movedetails)
         movedict.pop("id")
 
