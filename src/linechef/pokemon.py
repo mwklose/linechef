@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
+from linechef import poketype
 from linechef.pokemove import Pokemove
 import sqlite3
 import os
@@ -113,6 +114,36 @@ class Pokemon:
         poke = Pokemon.get_pokemon_by_trainer_id(trainer_id=first_trainer_id)
 
         return poke
+
+    def get_speed(self) -> int:
+        ...
+
+    def get_level(self) -> int:
+        ...
+
+    def get_effective_attack(self, damage_class: str) -> Tuple[int, int]:
+        ...
+
+    def get_effective_defense(self, damage_class: str) -> Tuple[int, int]:
+        ...
+
+    def stab_multiplier(self, attack_type: int) -> float:
+        ...
+
+    def get_type1(self) -> poketype.Poketype:
+        ...
+
+    def get_type2(self) -> poketype.Poketype | None:
+        ...
+
+    def get_burn_multiplier(self, damage_class: str) -> float:
+        ...
+
+    def is_poisoned(self) -> bool:
+        ...
+
+    def get_berry_multiplier(self, move_type: poketype.Poketype) -> float:
+        ...
 
 
 def calculate_hp(base_hp: int, iv: int, level: int) -> int:

@@ -1,3 +1,5 @@
+from typing import List
+from linechef.pokeitem import Pokeitem
 from linechef.pokemon import Pokemon
 import sys
 from dataclasses import dataclass
@@ -5,6 +7,15 @@ from dataclasses import dataclass
 
 @dataclass
 class BattleSolver:
+    opposing_team: List[Pokemon]
+    own_box: List[Pokemon]
+    own_items: List[Pokeitem]
+
+    def worst_case_scenario(self, opposing_team: List[Pokemon], own_team: List[Pokemon]):
+        ...
+
+    def train(self, ):
+        ...
     ...
 
 
@@ -15,13 +26,14 @@ if __name__ == "__main__":
             "[Usage]: first arg is route like 103, second arg is trainer name.")
 
     # Load opposing team
-    opposing_team = Pokemon.find_by_route_and_name(
+    opposing_team: List[Pokemon] = Pokemon.find_by_route_and_name(
         route=sys.argv[1], trainer_name=sys.argv[2])
 
     # TODO: get battle state, begin model deployment?
 
     # Load own team
-    own_box = Pokemon.get_pokemon_from_file(filename="db/pokemon.txt")
+    own_box: List[Pokemon] = Pokemon.get_pokemon_from_file(
+        filename="db/pokemon.txt")
 
     # Load own items
     own_items = "TODO"
