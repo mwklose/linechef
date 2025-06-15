@@ -34,88 +34,18 @@ class Pokemon:
         self.stat_modifiers = [0] * 7
         self.status = "Healthy"
 
-    @staticmethod
-    def get_pokemon_by_trainer_id(trainer_id: int) -> List["Pokemon"]:
-        db = sqlite3.connect("db/rnb.db")
-        db.row_factory = sqlite3.Row
-        cursor = db.cursor()
+    def get_speed(self, worst_case: bool = False) -> int:
+        ...
 
-        pokemon_list: List[Pokemon] = []
+    def get_functional_speed(self, worst_case: bool) -> int:
+        """This generates a speed value for the worst case scenario, accounting for
 
-        # See if matching trainer id
-        num_pokemon,  = cursor.execute(
-            "SELECT COUNT(poke_id) FROM pokemon WHERE trainer_id = (?);",
-            (trainer_id, )
-        ).fetchone()
+        Args:
+            worst_case (bool): _description_
 
-        if num_pokemon <= 0 or num_pokemon > 6:
-            breakpoint()
-            raise Exception(
-                f"[pokemon] Found an invalid number of matching pokemon ({num_pokemon})")
-
-        # Get lead pokemon
-        with open("db/sqls/get_pokemon_by_trainer_id.sql", "r") as f:
-            query = f.read()
-            lead_pokemon = cursor.execute(query, (trainer_id, True)).fetchall()
-            remaining_pokemon = cursor.execute(
-                query, (trainer_id, False)).fetchall()
-
-        if len(lead_pokemon) == 0:
-            breakpoint()
-            raise Exception(
-                f"[pokemon] Unable to find lead pokemon for trainer {trainer_id}")
-
-        # Calculate stats, add to pokemon_list
-
-        lead_mon = get_pokemon_from_dict(dict(lead_pokemon[0]))
-        pokemon_list.append(lead_mon)
-
-        for mon in remaining_pokemon:
-            pokemon_list.append(
-                get_pokemon_from_dict(dict(mon))
-            )
-
-        return pokemon_list
-
-    @staticmethod
-    def get_pokemon_from_file(filename: str) -> List['Pokemon']:
-        if not os.path.exists(filename):
-            raise Exception(f"[pokemon] File {filename} does not exist.")
-
-        with open(filename, "r") as f:
-            pokemon_list = f.read()
-
-        team_list: List[Pokemon] = []
-        for m in re.finditer(LUA_REGEX, pokemon_list):
-            team_list.append(
-                get_pokemon_from_lua_dict(m.groupdict())
-            )
-
-        return team_list
-
-    @staticmethod
-    def find_by_route_and_name(route: str, trainer_name: str) -> List["Pokemon"]:
-        db = sqlite3.connect(database="db/rnb.db")
-
-        cursor = db.cursor()
-
-        with open("db/sqls/get_trainer_id_by_route_and_name.sql", "r") as f:
-            query_get_trainer_id: str = f.read()
-
-        trainer_id = cursor.execute(
-            query_get_trainer_id, (f"%{trainer_name}%", f"%{route}%")).fetchall()
-
-        if len(trainer_id) == 0:
-            raise Exception(f"[battle_state] Unable to find trainer {
-                            trainer_name} on route {route}")
-
-        first_trainer_id, = trainer_id[0]
-
-        poke = Pokemon.get_pokemon_by_trainer_id(trainer_id=first_trainer_id)
-
-        return poke
-
-    def get_speed(self) -> int:
+        Returns:
+            int: _description_
+        """
         ...
 
     def get_level(self) -> int:
@@ -145,110 +75,380 @@ class Pokemon:
     def get_berry_multiplier(self, move_type: poketype.Poketype) -> float:
         ...
 
+    def get_current_hp(self) -> int:
+        ...
 
-def calculate_hp(base_hp: int, iv: int, level: int) -> int:
-    numerator: int = (2 * base_hp + iv) * level
-    hp: int = numerator // 100 + level + 10
-    return hp
+    def get_hp(self) -> int:
+        ...
 
+    def is_fainted(self) -> bool:
+        return self.current_hp <= 0
 
-def calculate_stat(base_stat: int, iv: int, level: int, nature: int) -> int:
-    numerator: int = (2 * base_stat + iv) * level
-    stat: int = numerator // 100 + 5
-    # Nature given as either 100 (neutral), 90 (lower), or 110 (higher)
-    nature_stat: int = (stat * nature) // 100
-    return nature_stat
+    def calculate_damage_rolls(self, target_pokemon: "Pokemon", weather: str | None = None, is_doubles: bool = False,
+                               reflect_screen_up: bool = False,
+                               light_screen_up: bool = False,
+                               aurora_veil_up: bool = False
+                               ) -> Dict[Pokemove, Tuple[List[int], List[int]]]:
 
+        damage_rolls: Dict[Pokemove, Tuple[List[int], List[int]]] = {}
 
-def get_pokemon_from_dict(poke_dict: Dict[str, Any]) -> Pokemon:
-    return_dict = {}
+        for move in self.move_list:
 
-    # Basic things stay the same
-    for item in ["name", "type1", "type2", "nature", "held_item", "ability"]:
-        if item in poke_dict:
-            return_dict[item] = poke_dict[item]
-        else:
-            return_dict[item] = None
+            if move.damage_class == "status":
+                # This is explicitly for damage roll calculation
+                continue
 
-    # Calculate the stats
-    return_dict["level"] = poke_dict["pokelevel"]
-    return_dict["hp"] = calculate_hp(
-        poke_dict["base_hp"], 31, poke_dict["pokelevel"])
+            level: int = self.get_level()
 
-    for i, stat in enumerate(["attack", "defense", "spattack", "spdefense", "speed"]):
+            effective_attack, effective_attack_crit = self.get_effective_attack(
+                damage_class=move.damage_class)
 
-        return_dict[stat] = calculate_stat(
-            base_stat=poke_dict[f"base_{stat}"],
-            iv=31 if f"{stat}_iv" not in poke_dict else poke_dict[f"{stat}_iv"],
-            level=poke_dict["pokelevel"],
-            nature=get_pokenature_by_id(
-                nature_id=poke_dict["nature"], stat_num=i)
-        )
+            effective_defense, effective_defense_crit = target_pokemon.get_effective_defense(
+                damage_class=move.damage_class)
 
-    # Get the move list and modifiers
-    return_dict["move_list"] = [Pokemove.get_pokemove_by_id(id)
-                                for k, id in poke_dict.items()
-                                if str(k).startswith("move") and id is not None]
-    return Pokemon(**return_dict)
+            # Spread damage multiplier?
+            if move.target == "all-opponents" and is_doubles:
+                target_multiplier = 0.75
+            else:
+                target_multiplier = 1.0
 
+            # Weather
+            if weather is None:
+                weather_mult = 1.0
+            elif weather == "Rain" and move.poketype == poketype.Poketype.WATER:
+                weather_mult = 1.5
+            elif weather == "Rain" and move.poketype == poketype.Poketype.FIRE:
+                weather_mult = 0.5
+            elif weather == "Harsh Sunlight" and move.poketype == poketype.Poketype.WATER:
+                weather_mult = 0.5
+            elif weather == "Harsh Sunlight" and move.poketype == poketype.Poketype.FIRE:
+                weather_mult = 1.0
+            else:
+                weather_mult = 1.0
+                breakpoint()
 
-def get_pokemon_from_lua_dict(poke_dict: Dict[str, Any]) -> Pokemon:
-    db = sqlite3.connect("db/rnb.db")
-    db.row_factory = sqlite3.Row
-    cursor = db.cursor()
+            # STAB
+            stab_multiplier: float = self.stab_multiplier(
+                attack_type=move.poketype)
 
-    return_dict = {}
-    # Name
-    return_dict["name"] = adjust_pokemon_name(poke_dict["species"])
+            # Freeze-Dry
+            # Flying press?
 
-    # Types
-    result = cursor.execute("SELECT * FROM species_stat WHERE name = (?)",
-                            (return_dict["name"],)).fetchone()
+            # Burn
+            burn_multiplier: float = self.get_burn_multiplier(
+                damage_class=move.damage_class)
 
-    if result is None:
-        breakpoint()
+            # Other multipliers
+            type_effectiveness = poketype.Poketype.type_effectiveness(
+                attack_type=move.poketype,
+                defense_type1=target_pokemon.get_type1(),
+                defense_type2=target_pokemon.get_type2(),
+            )
 
-    return_dict["type1"] = result["type1"]
-    return_dict["type2"] = result["type2"]
+            # Critical hits
+            if target_pokemon.ability == "Battle Armor" or target_pokemon.ability == "Shell Armor":
+                noncritical_multiplier = 1.0
+                critical_multiplier = 1.0
 
-    # Nature
-    nature = dict(cursor.execute(
-        "SELECT id FROM pokenature WHERE name = (?)", (poke_dict["nature"], )).fetchone())
-    return_dict["nature"] = nature["id"]
+            elif move.movename in ["storm-throw", "frost-breath", "zippy-zap", "surging-strikes", "wicked-blow", "flower-trick"]:
+                noncritical_multiplier = 1.5
+                critical_multiplier = 1.5
 
-    # Held Item?
-    return_dict["held_item"] = poke_dict["item"]
+            elif self.ability == "Sniper":
+                noncritical_multiplier = 1.0
+                critical_multiplier = 2.25
 
-    # Ability
-    return_dict["ability"] = str(poke_dict["ability"]).strip()
+            elif target_pokemon.is_poisoned() and self.ability == "Merciless":
+                noncritical_multiplier = 1.5
+                critical_multiplier = 1.5
+            elif move.movename == "Future Sight":
+                noncritical_multiplier = 1.0
+                critical_multiplier = 1.0
+            else:
+                noncritical_multiplier = 1.0
+                critical_multiplier = 1.5
 
-    # Level
-    return_dict["level"] = int(str(poke_dict["level"]).strip())
+            # Berries
+            berry_multiplier = target_pokemon.get_berry_multiplier(
+                move_type=poketype.Poketype(value=move.poketype))
 
-    # IVs
-    return_dict["hp"] = calculate_hp(
-        result["base_hp"], int(poke_dict["hp_iv"]), return_dict["level"])
+            # TODO: finish "other" category as needed
+            # Minimize
+            minimize_multiplier = 1
 
-    for i, stat in enumerate(["attack", "defense", "spattack", "spdefense", "speed"]):
-        return_dict[stat] = calculate_stat(
-            base_stat=result[f"base_{stat}"],
-            iv=31 if f"{stat}_iv" not in poke_dict else int(
-                poke_dict[f"{stat}_iv"]),
-            level=return_dict["level"],
-            nature=get_pokenature_by_id(
-                nature_id=nature["id"], stat_num=i)
-        )
+            # Screens
+            # Not Infiltrator
+            if self.ability == "Infiltrator":
+                screens_multiplier = 1
 
-    # Moves
-    move_ids = []
-    for i in range(1, 5):
-        if f"move{i}" in poke_dict:
-            m = dict(cursor.execute("SELECT id FROM pokemove WHERE movename = (?)",
-                                    (adjust_move_name(poke_dict[f"move{i}"]), )).fetchone())
-            move_ids.append(m["id"])
+            # Reflect
+            elif reflect_screen_up and move.damage_class == "physical":
+                screens_multiplier = 0.5
 
-    # Get the move list and modifiers
-    return_dict["move_list"] = [
-        Pokemove.get_pokemove_by_id(id) for id in move_ids]
+            # Light Screen
+            elif light_screen_up and move.damage_class == "special":
+                screens_multiplier = 0.5
 
-    return Pokemon(**return_dict)
+            # Aurora Veil
+            elif aurora_veil_up:
+                screens_multiplier = 0.5
+
+            else:
+                screens_multiplier = 1.0
+
+            # Multiscale
+            if target_pokemon.ability == "Multiscale" and target_pokemon.get_current_hp() == target_pokemon.get_hp():
+                multiscale_multiplier = 0.5
+            else:
+                multiscale_multiplier = 1.0
+
+            # Fluffy
+            fluffy_multiplier = 1.0
+
+            # Punk Rock
+            punk_rock_multiplier = 1.0
+
+            # Friend Guard
+            friend_guard_multiplier = 1.0
+
+            # Filter, Solid Rock, Tinted Lens
+            if type_effectiveness > 1.0 and self.ability != "Mold Breaker" and (target_pokemon.ability == "Solid Rock" or target_pokemon.ability == "Filter"):
+                opponent_ability_multiplier = 0.75
+            elif type_effectiveness > 1.0 and self.held_item == "Expert Belt":
+                opponent_ability_multiplier = 1.2
+            elif type_effectiveness < 1 and self.ability == "Tinted Lens":
+                opponent_ability_multiplier = 2
+            else:
+                opponent_ability_multiplier = 1
+
+            # Metronome
+
+            # Random
+            random_multipliers: List[int] = [i for i in range(85, 101)]
+
+            # # Multihit moves? -> save for elsewhere calculations
+            # if move.min_hits is None or move.max_hits is None:
+            #     multihit_multipliers = [1]
+            # elif self.ability == "Skill Link":
+            #     multihit_multipliers = [move.max_hits]
+            # else:
+            #     multihit_multipliers = [i for i in range(
+            #         self.min_hits, self.max_hits + 1)]
+
+            power_level_base = 2 + 2 * level / 5 * move.power / 50
+            base_damage = 2 + power_level_base * effective_attack // effective_defense
+            base_damage_crit = 2 + power_level_base * \
+                effective_attack_crit // effective_defense_crit
+
+            static_multipliers = target_multiplier * weather_mult * stab_multiplier * \
+                burn_multiplier * berry_multiplier * minimize_multiplier * screens_multiplier * \
+                multiscale_multiplier * fluffy_multiplier * \
+                punk_rock_multiplier * friend_guard_multiplier * opponent_ability_multiplier
+
+            crit_total = (base_damage_crit *
+                          critical_multiplier * static_multipliers) // 1
+            base_total = (base_damage * noncritical_multiplier *
+                          static_multipliers) // 1
+
+            damage_rolls[move] = (
+                [int((roll * base_total) // 100)
+                 for roll in random_multipliers],
+                [int((roll * crit_total) // 100)
+                 for roll in random_multipliers],
+            )
+
+        return damage_rolls
+
+    @staticmethod
+    def get_pokemon_by_trainer_id(trainer_id: int) -> List["Pokemon"]:
+        db = sqlite3.connect("db/rnb.db")
+        db.row_factory = sqlite3.Row
+        cursor = db.cursor()
+
+        pokemon_list: List[Pokemon] = []
+
+        # See if matching trainer id
+        num_pokemon, = cursor.execute(
+            "SELECT COUNT(poke_id) FROM pokemon WHERE trainer_id = (?);",
+            (trainer_id, )
+        ).fetchone()
+
+        if num_pokemon <= 0 or num_pokemon > 6:
+            breakpoint()
+            raise Exception(
+                f"[pokemon] Found an invalid number of matching pokemon ({num_pokemon})")
+
+            # Get lead pokemon
+        with open("db/sqls/get_pokemon_by_trainer_id.sql", "r") as f:
+            query = f.read()
+            lead_pokemon = cursor.execute(
+                query, (trainer_id, True)).fetchall()
+            remaining_pokemon = cursor.execute(
+                query, (trainer_id, False)).fetchall()
+
+            if len(lead_pokemon) == 0:
+                breakpoint()
+                raise Exception(
+                    f"[pokemon] Unable to find lead pokemon for trainer {trainer_id}")
+
+        # Calculate stats, add to pokemon_list
+
+        lead_mon = Pokemon.get_pokemon_from_dict(dict(lead_pokemon[0]))
+        pokemon_list.append(lead_mon)
+
+        for mon in remaining_pokemon:
+            pokemon_list.append(
+                Pokemon.get_pokemon_from_dict(dict(mon))
+            )
+
+        return pokemon_list
+
+    @staticmethod
+    def get_pokemon_from_file(filename: str) -> List['Pokemon']:
+        if not os.path.exists(filename):
+            raise Exception(f"[pokemon] File {filename} does not exist.")
+
+        with open(filename, "r") as f:
+            pokemon_list = f.read()
+
+        team_list: List[Pokemon] = []
+        for m in re.finditer(LUA_REGEX, pokemon_list):
+            team_list.append(
+                Pokemon.get_pokemon_from_lua_dict(m.groupdict())
+            )
+
+        return team_list
+
+    @staticmethod
+    def find_by_route_and_name(route: str, trainer_name: str) -> Tuple[List["Pokemon"], int]:
+        db = sqlite3.connect(database="db/rnb.db")
+
+        cursor = db.cursor()
+
+        with open("db/sqls/get_trainer_id_by_route_and_name.sql", "r") as f:
+            query_get_trainer_id: str = f.read()
+
+        trainer_id = cursor.execute(
+            query_get_trainer_id, (f"%{trainer_name}%", f"%{route}%")).fetchall()
+
+        if len(trainer_id) == 0:
+            raise Exception(f"[battle_state] Unable to find trainer {
+                            trainer_name} on route {route}")
+
+        first_trainer_id, = trainer_id[0]
+
+        poke = Pokemon.get_pokemon_by_trainer_id(
+            trainer_id=first_trainer_id)
+
+        return poke, first_trainer_id
+
+    @staticmethod
+    def calculate_hp(base_hp: int, iv: int, level: int) -> int:
+        numerator: int = (2 * base_hp + iv) * level
+        hp: int = numerator // 100 + level + 10
+        return hp
+
+    @staticmethod
+    def calculate_stat(base_stat: int, iv: int, level: int, nature: int) -> int:
+        numerator: int = (2 * base_stat + iv) * level
+        stat: int = numerator // 100 + 5
+        # Nature given as either 100 (neutral), 90 (lower), or 110 (higher)
+        nature_stat: int = (stat * nature) // 100
+        return nature_stat
+
+    @staticmethod
+    def get_pokemon_from_dict(poke_dict: Dict[str, Any]) -> "Pokemon":
+        return_dict = {}
+
+        # Basic things stay the same
+        for item in ["name", "type1", "type2", "nature", "held_item", "ability"]:
+            if item in poke_dict:
+                return_dict[item] = poke_dict[item]
+            else:
+                return_dict[item] = None
+
+            # Calculate the stats
+            return_dict["level"] = poke_dict["pokelevel"]
+            return_dict["hp"] = Pokemon.calculate_hp(
+                poke_dict["base_hp"], 31, poke_dict["pokelevel"])
+
+        for i, stat in enumerate(["attack", "defense", "spattack", "spdefense", "speed"]):
+
+            return_dict[stat] = Pokemon.calculate_stat(
+                base_stat=poke_dict[f"base_{stat}"],
+                iv=31 if f"{stat}_iv" not in poke_dict else poke_dict[f"{stat}_iv"],
+                level=poke_dict["pokelevel"],
+                nature=get_pokenature_by_id(
+                    nature_id=poke_dict["nature"], stat_num=i)
+            )
+
+        # Get the move list and modifiers
+        return_dict["move_list"] = [Pokemove.get_pokemove_by_id(id)
+                                    for k, id in poke_dict.items()
+                                    if str(k).startswith("move") and id is not None]
+
+        return Pokemon(**return_dict)
+
+    @staticmethod
+    def get_pokemon_from_lua_dict(poke_dict: Dict[str, Any]) -> "Pokemon":
+        db = sqlite3.connect("db/rnb.db")
+        db.row_factory = sqlite3.Row
+        cursor = db.cursor()
+
+        return_dict = {}
+        # Name
+        return_dict["name"] = adjust_pokemon_name(poke_dict["species"])
+
+        # Types
+        result = cursor.execute("SELECT * FROM species_stat WHERE name = (?)",
+                                (return_dict["name"],)).fetchone()
+
+        if result is None:
+            breakpoint()
+
+        return_dict["type1"] = result["type1"]
+        return_dict["type2"] = result["type2"]
+
+        # Nature
+        nature = dict(cursor.execute(
+            "SELECT id FROM pokenature WHERE name = (?)", (poke_dict["nature"], )).fetchone())
+        return_dict["nature"] = nature["id"]
+
+        # Held Item?
+        return_dict["held_item"] = poke_dict["item"]
+
+        # Ability
+        return_dict["ability"] = str(
+            poke_dict["ability"]).strip()
+
+        # Level
+        return_dict["level"] = int(
+            str(poke_dict["level"]).strip())
+
+        # IVs
+        return_dict["hp"] = Pokemon.calculate_hp(
+            result["base_hp"], int(poke_dict["hp_iv"]), return_dict["level"])
+
+        for i, stat in enumerate(["attack", "defense", "spattack", "spdefense", "speed"]):
+            return_dict[stat] = Pokemon.calculate_stat(
+                base_stat=result[f"base_{stat}"],
+                iv=31 if f"{stat}_iv" not in poke_dict else int(
+                    poke_dict[f"{stat}_iv"]),
+                level=return_dict["level"],
+                nature=get_pokenature_by_id(
+                    nature_id=nature["id"], stat_num=i)
+            )
+
+        # Moves
+        move_ids = []
+        for i in range(1, 5):
+            if f"move{i}" in poke_dict:
+                m = dict(cursor.execute("SELECT id FROM pokemove WHERE movename = (?)",
+                                        (adjust_move_name(poke_dict[f"move{i}"]), )).fetchone())
+                move_ids.append(m["id"])
+
+        # Get the move list and modifiers
+        return_dict["move_list"] = [
+            Pokemove.get_pokemove_by_id(id) for id in move_ids]
+
+        return Pokemon(**return_dict)

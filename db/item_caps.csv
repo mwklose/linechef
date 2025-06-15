@@ -1,23 +1,22 @@
-item,available_id
 Silk Scarf,12
 Nevermelt Ice,14
 Soft Sand,14
-Black Glasses,
-Poison Barb,
-Miracle Seed,
-Silver Powder,
-Hard Stone,
-Sharp Beak,
-Pixie Plate,
-Black Belt,
-Metal Coat,
-Dragon Fang,
-Charcoal,
-Magnet,
-Mystic Water,
-Twisted Spoon,
-Spell Tag,
-Rock Gem,
+Black Glasses,19
+Poison Barb,30
+Miracle Seed,31
+Silver Powder,31
+Hard Stone,50
+Sharp Beak,110
+Pixie Plate,134
+Black Belt,138
+Metal Coat,123
+Dragon Fang,152
+Charcoal,152
+Magnet,163
+Mystic Water,200
+Twisted Spoon,200
+Spell Tag,264
+Rock Gem,161
 Dark Gem,
 Poison Gem,
 Ground Gem,
@@ -42,8 +41,8 @@ Protective Pads,
 Zoom Lens,
 Razor Claw,
 Razor Fang,
-King's Rock,
-Life Orb,
+King's Rock,123
+Life Orb,218
 Metronome,
 Shell Bell,
 Expert Belt,
@@ -71,12 +70,12 @@ Oran Berry,6
 Pecha Berry,6
 Cheri Berry,10
 Chesto Berry,10
-Leppa Berry,
+Leppa Berry,10
 Rawst Berry,
 Persim Berry,
 Aspear Berry,
-Sitrus Berry,
-Lum Berry,
+Sitrus Berry,112
+Lum Berry,112
 Lansat Berry,
 Starf Berry,
 Custap Berry,
