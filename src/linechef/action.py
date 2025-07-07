@@ -46,15 +46,15 @@ class AttackAction(Action):
     performing_slot: Slot
     target_slot: Slot | None
     move: Pokemove
-    worst_case: bool = False
+    best_case: bool = False
     trick_room_active: bool = False
 
     def get_action_speed(self, trick_room_active: bool = False) -> int:
         priority_bracket: int = self.move.get_priority() * PRIORITY_MULTIPLIER
         speed_in_bracket: int = self.performing_slot.get_pokemon(
-        ).get_functional_speed(worst_case=self.worst_case)
+        ).get_functional_speed(best_case=self.best_case)
 
-        if self.trick_room_active and speed_in_bracket > MAX_SPEED:
+        if self.trick_room_active and speed_in_bracket < MAX_SPEED:
             speed_in_bracket = 1024 - speed_in_bracket
 
         return priority_bracket + speed_in_bracket
