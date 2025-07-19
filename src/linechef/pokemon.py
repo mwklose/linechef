@@ -208,6 +208,11 @@ class Pokemon:
                 # This is explicitly for damage roll calculation
                 continue
 
+            # Add check for venoshock (and other moves that double power under certain conditions)
+            move_power = move.power
+            if move.movename == "venoshock" and target_pokemon.is_poisoned(): 
+                move_power = move.power * 2
+
             level: int = self.get_level()
 
             # Spread damage multiplier?
@@ -314,7 +319,6 @@ class Pokemon:
             else:
                 multiscale_multiplier = 1.0
 
-            # TODO: complete these
 
             # Guts
             if self.ability == "Guts" and self.status != "Healthy":
@@ -372,9 +376,9 @@ class Pokemon:
 
             # Damage rounding threshold comes from power_level_base object
             power_level_base = (2 + ((2 * level) // 5))
-            base_damage = 2 + (power_level_base * move.power *
+            base_damage = 2 + (power_level_base * move_power *
                                effective_attack_modified) // (50 * effective_defense_modified)
-            base_damage_crit = 2 + (power_level_base * move.power *
+            base_damage_crit = 2 + (power_level_base * move_power *
                                     effective_attack_crit) // (50 * effective_defense_crit)
 
             # Multiplication needs to be in a specific order, otherwise the truncation rounding will not match up.
@@ -395,8 +399,6 @@ class Pokemon:
             base_total_random = [roll * base_total // 100 for roll in range(85, 101)]
             crit_total_random = [roll * crit_total // 100 for roll in range(85, 101)]
 
-            # TODO: bug here, possibly due to order of multiplication.
-            # May just need to match Bulbapedia, which makes less efficient.
             for multiplier in [stab_multiplier, type_effectiveness, burn_multiplier, berry_multiplier, minimize_multiplier, screens_multiplier, multiscale_multiplier, guts_multiplier, fluffy_multiplier, punk_rock_multiplier, friend_guard_multiplier, opponent_ability_multiplier]:
                 base_total_random = [multiplier * base_total_roll // 1 for base_total_roll in base_total_random]
                 crit_total_random = [multiplier * crit_total_roll // 1 for crit_total_roll in crit_total_random]
