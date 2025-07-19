@@ -361,9 +361,6 @@ class Pokemon:
 
             # Metronome
 
-            # Random
-            random_multipliers: list[float] = [i / 100 for i in range(85, 101)]
-
             # # Multihit moves? -> save for elsewhere calculations
             # if move.min_hits is None or move.max_hits is None:
             #     multihit_multipliers = [1]
@@ -380,23 +377,34 @@ class Pokemon:
             base_damage_crit = 2 + (power_level_base * move.power *
                                     effective_attack_crit) // (50 * effective_defense_crit)
 
-            base_total = base_damage * noncritical_multiplier
-            crit_total = base_damage_crit * critical_multiplier
+            # Multiplication needs to be in a specific order, otherwise the truncation rounding will not match up.
+            # The order of operations I used is from Bulbapedia.
+            base_total = base_damage
+            crit_total = base_damage_crit
+            for multiplier in [target_multiplier, weather_mult]: 
+                base_total *= multiplier 
+                base_total //= 1
+                crit_total *= multiplier 
+                crit_total //= 1
+
+            base_total *= noncritical_multiplier
+            crit_total *= critical_multiplier
+            base_total //= 1
+            crit_total //= 1
+
+            base_total_random = [roll * base_total // 100 for roll in range(85, 101)]
+            crit_total_random = [roll * crit_total // 100 for roll in range(85, 101)]
 
             # TODO: bug here, possibly due to order of multiplication.
             # May just need to match Bulbapedia, which makes less efficient.
-            for multiplier in [target_multiplier, weather_mult, stab_multiplier, burn_multiplier, berry_multiplier, minimize_multiplier, screens_multiplier, multiscale_multiplier, guts_multiplier, fluffy_multiplier, punk_rock_multiplier, friend_guard_multiplier, opponent_ability_multiplier]:
-                base_total *= multiplier
-                base_total //= 1
+            for multiplier in [stab_multiplier, type_effectiveness, burn_multiplier, berry_multiplier, minimize_multiplier, screens_multiplier, multiscale_multiplier, guts_multiplier, fluffy_multiplier, punk_rock_multiplier, friend_guard_multiplier, opponent_ability_multiplier]:
+                base_total_random = [multiplier * base_total_roll // 1 for base_total_roll in base_total_random]
+                crit_total_random = [multiplier * crit_total_roll // 1 for crit_total_roll in crit_total_random]
 
-                crit_total *= multiplier
-                crit_total //= 1
-
-            breakpoint()
+            
             damage_rolls[move] = (
-                [round((roll * base_total)) for roll in random_multipliers],
-                [round((roll * crit_total))
-                 for roll in random_multipliers],
+                base_total_random,
+                crit_total_random
             )
 
         return damage_rolls
